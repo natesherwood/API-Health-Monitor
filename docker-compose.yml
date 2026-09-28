@@ -1,0 +1,78 @@
+# docker compose up --build --scale worker=3
+#
+# Status page:   http://localhost:8080/
+# Management:    curl -H "X-Api-Key: change-me" http://localhost:8080/api/monitors
+# Webhook sink:  http://localhost:8080/demo/webhook-sink   (deliveries the workers sent, with signature check)
+#
+# Workers default to WORKER_ID=auto / WORKER_COUNT=auto: each replica leases a slot via a PostgreSQL
+# advisory lock and shards by live membership, so `--scale worker=N` needs no per-replica config and
+# re-shards itself when replicas come and go. For fixed sharding, run replicas with explicit
+# WORKER_ID / WORKER_COUNT instead (see docs/scaling.md).
+
+name: ratemyapi
+
+x-db-connection: &db-connection "Host=db;Port=5432;Database=ratemyapi;Username=ratemyapi;Password=ratemyapi;Maximum Pool Size=50"
+
+services:
+  db:
+    image: postgres:16-alpine
+    command: ["postgres", "-c", "max_connections=300", "-c", "timezone=UTC"]
+    environment:
+      POSTGRES_DB: ratemyapi
+      POSTGRES_USER: ratemyapi
+      POSTGRES_PASSWORD: ratemyapi
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ratemyapi -d ratemyapi"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+
+  api:
+    build:
+      context: .
+      target: api
+    environment:
+      ConnectionStrings__Postgres: *db-connection
+      Api__Key: ${API_KEY:-change-me}
+      Demo__Enabled: "true"
+      Demo__Seed: "true"
+      Demo__TargetBaseUrl: http://api:8080
+      Demo__BackfillHours: "96"
+      Demo__WebhookSecret: ${WEBHOOK_SECRET:-dev-webhook-secret}
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      target: worker
+    environment:
+      ConnectionStrings__Postgres: *db-connection
+      WORKER_ID: ${WORKER_ID:-auto}
+      WORKER_COUNT: ${WORKER_COUNT:-auto}
+      Retention__Months: "6"
+      Retention__PartitionsAhead: "2"
+      Stats__RefreshSeconds: "30"
+      Notifications__Webhook__Url: http://api:8080/demo/webhook-sink
+      Notifications__Webhook__Secret: ${WEBHOOK_SECRET:-dev-webhook-secret}
+      # Email is off unless an SMTP server is configured, e.g. a local Mailpit:
+      # Notifications__Email__To: oncall@example.com
+      # Notifications__Email__SmtpHost: mailpit
+      # Notifications__Email__SmtpPort: "1025"
+    depends_on:
+      db:
+        condition: service_healthy
+      api:
+        condition: service_started
+    # A claimed batch always finishes before exit; allow for the longest check timeout.
+    stop_grace_period: 70s
+
+volumes:
+  pgdata:

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>RateMyAPI · status</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230b0d10'/%3E%3Cpath d='M1 11h3l2-6 3 8 2-4h4' fill='none' stroke='%233fb950' stroke-width='1.6'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg: #0b0d10;
+      --panel: #10141a;
+      --row-alt: #0e1217;
+      --border: #1d242d;
+      --text: #c9d1d9;
+      --dim: #6e7a86;
+      --faint: #3a444f;
+      --green: #3fb950;
+      --amber: #d29922;
+      --red: #f85149;
+      --blue: #58a6ff;
+      --seg-empty: #1b222b;
+      --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--text); }
+    body { font: 12px/1.35 var(--mono); padding: 12px 16px 24px; }
+    a { color: var(--blue); text-decoration: none; }
+    .wrap { max-width: 1280px; margin: 0 auto; }
+
+    header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    header h1 { font-size: 13px; margin: 0; letter-spacing: .08em; font-weight: 700; }
+    header h1 .slash { color: var(--dim); font-weight: 400; }
+    .meta { color: var(--dim); }
+    .spacer { flex: 1; }
+
+    .pill { display: inline-block; min-width: 72px; padding: 0 6px; border: 1px solid currentColor; border-radius: 2px; text-align: center; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; font-size: 11px; line-height: 16px; }
+    .s-ok { color: var(--green); }
+    .s-degraded { color: var(--amber); }
+    .s-down { color: var(--red); }
+    .s-resolved { color: var(--blue); }
+    .s-disabled { color: var(--dim); }
+
+    .banner { margin: 8px 0 0; border: 1px solid var(--red); background: rgba(248, 81, 73, .08); }
+    .banner.only-degraded { border-color: var(--amber); background: rgba(210, 153, 34, .08); }
+    .banner .line { display: flex; flex-wrap: wrap; gap: 0 10px; padding: 3px 8px; border-top: 1px solid var(--border); }
+    .banner .line:first-child { border-top: 0; }
+    .banner .reason { color: var(--text); }
+    .banner .when { color: var(--dim); }
+
+    .error { margin: 8px 0 0; padding: 3px 8px; border: 1px solid var(--red); color: var(--red); }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: fixed; }
+    th, td { padding: 3px 6px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+    th { color: var(--dim); font-weight: 400; border-bottom: 1px solid var(--border); font-size: 11px; text-transform: lowercase; }
+    tbody tr:nth-child(even) { background: var(--row-alt); }
+    tbody tr:hover { background: #151b22; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    /* table-layout: fixed takes column widths from the header cells; hiding a column hides its th and tds. */
+    th.c-state { width: 88px; } th.c-name { width: 180px; } th.c-up { width: 72px; }
+    th.c-spark { width: 132px; } th.c-p95 { width: 70px; } th.c-last { width: 84px; }
+    .name { color: var(--text); }
+    .sub { color: var(--dim); font-size: 11px; }
+    .bar, .spark { display: block; width: 100%; }
+    .spark { height: 22px; }
+    .bar { height: 16px; }
+    .late { color: var(--amber); }
+
+    footer { margin-top: 10px; color: var(--dim); display: flex; flex-wrap: wrap; gap: 4px 16px; }
+    .legend i { display: inline-block; width: 8px; height: 8px; margin-right: 4px; vertical-align: -1px; }
+
+    @media (max-width: 860px) {
+      .c-spark, .c-p95 { display: none; }
+      th.c-name { width: 130px; }
+    }
+    @media (max-width: 560px) {
+      body { padding: 8px 16px 16px; }
+      .c-up { display: none; }
+      th.c-state { width: 74px; } .pill { min-width: 60px; }
+      th.c-name { width: 104px; } th.c-last { width: 64px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root" class="wrap"><noscript>This status page needs JavaScript. Raw data: <a href="/api/status">/api/status</a></noscript></div>
+
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js"></script>
+  <script type="text/babel" data-presets="react" src="app.jsx"></script>
+</body>
+</html>

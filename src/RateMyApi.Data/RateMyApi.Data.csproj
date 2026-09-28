@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>RateMyApi.Data</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RateMyApi.Core\RateMyApi.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="Npgsql" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+  </ItemGroup>
+
+  <!-- /migrations/*.sql is the single source of truth; embedding it means the API, the worker
+       and the test suite all apply exactly the same files with no copy step. -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\migrations\*.sql" LogicalName="migrations/%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

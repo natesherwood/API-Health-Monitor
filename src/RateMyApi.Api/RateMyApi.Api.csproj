@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>RateMyApi.Api</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RateMyApi.Core\RateMyApi.Core.csproj" />
+    <ProjectReference Include="..\RateMyApi.Data\RateMyApi.Data.csproj" />
+  </ItemGroup>
+
+  <!-- The status page lives in /web (no build step); ship it next to the binaries. -->
+  <ItemGroup>
+    <Content Include="..\..\web\**\*" Link="web\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
